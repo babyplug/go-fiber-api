@@ -105,23 +105,23 @@ func registerHandler(app *Application) {
 		AllowOrigins: app.Config.CorsAllowedOrigins, // Allow requests from frontend
 		AllowHeaders: app.Config.CorsAllowedHeaders,
 	}))
-	api := app.Server.Group("")
+	root := app.Server.Group("")
 
 	// Middleware: Set user access token to context
-	api.Use(func(c *fiber.Ctx) error {
+	root.Use(func(c *fiber.Ctx) error {
 		// tk := c.Get(fiber.HeaderAuthorization)
 		// c.Context().SetUserValue(constants.ContextUserAccessTokenKey, tk)
 		return c.Next()
 	})
 
-	// games := api.Group("users")
+	// games := root.Group("users")
 	// games.Get("", app.UserHandler)
 	// games.Get(":id", app.UserHandler.GetByID)
 	// games.Post("", app.UserHandler.Create)
 	// games.Put(":id", app.UserHandler.Update)
 	// games.Delete(":id", app.UserHandler.Delete)
 
-	service := api.Group("service")
+	service := root.Group("service")
 	service.Use(app.APIKeyMiddleware.Validate())
 	service.Get("", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("hello, world")
