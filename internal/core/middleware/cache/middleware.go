@@ -68,22 +68,21 @@ func (m *cacheMiddlewareImpl) RedisCacheMiddleware(ttl int) fiber.Handler {
 		}
 		cacheKey := fmt.Sprintf(baseKey, c.Method(), c.Path(), queries)
 
-		// var cachedResponse model.ResponseDTO
+		var cachedResponse any
 
-		// err := m.rc.Get(cacheKey, &cachedResponse)
+		err := m.rc.Get(cacheKey, &cachedResponse)
+		if err == nil {
+			// Return cached response
+			c.Set("X-Cache", "HIT") // Mark response as cache hit
 
-		// if err == nil {
-		// 	// Return cached response
-		// 	c.Set("X-Cache", "HIT") // Mark response as cache hit
-
-		// 	return c.JSON(cachedResponse)
-		// } else {
-		// 	// Mark as cache miss
-		// 	c.Set("X-Cache", "MISS")
-		// }
+			return c.JSON(cachedResponse)
+		} else {
+			// Mark as cache miss
+			c.Set("X-Cache", "MISS")
+		}
 
 		// Continue with request processing
-		err := c.Next()
+		err = c.Next()
 		if err != nil {
 			return err
 		}

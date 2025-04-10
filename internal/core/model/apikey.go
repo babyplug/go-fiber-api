@@ -1,7 +1,5 @@
 package model
 
-import "gorm.io/gorm"
-
 type Duration string
 
 const (
@@ -12,7 +10,7 @@ const (
 )
 
 type APIKey struct {
-	gorm.Model
+	Base
 	Token    string   `json:"key"`
 	Name     string   `json:"name"`
 	Duration Duration `json:"duration"`
@@ -27,9 +25,8 @@ func (a APIKey) FromDTO(dto APIKeyDTO) any {
 }
 
 type APIKeyDTO struct {
-	gorm.Model
-
-	Token    string   `json:"key"`
+	Base
+	Token    string   `json:"token"`
 	Name     string   `json:"name"`
 	Duration Duration `json:"duration"`
 }

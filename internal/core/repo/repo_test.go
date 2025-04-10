@@ -93,7 +93,7 @@ func TestGormRepository_FindByID(t *testing.T) {
 	repo := repository.NewRepository[Product, ProductDTO](client)
 	ctx := context.Background()
 
-	expected := Product{
+	expected := ProductDTO{
 		ID:          8,
 		Name:        "product1",
 		Weight:      100,

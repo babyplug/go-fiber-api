@@ -217,7 +217,7 @@ func Test_Apikey_serviceImpl_Query(t *testing.T) {
 					repo := mock.NewMockRepository[model.APIKey, model.APIKeyDTO](ctrl)
 					repo.EXPECT().
 						FindAll(gomock.Any()).
-						Return(&[]model.APIKeyDTO{
+						Return([]model.APIKeyDTO{
 							{Token: token1, Name: "apikey1"},
 							{Token: token2, Name: "apikey2"},
 						}, nil)
@@ -267,7 +267,7 @@ func Test_Apikey_serviceImpl_GetItem(t *testing.T) {
 		dependency
 		expectedErr    bool
 		expectedErrMsg string
-		expected       *model.APIKeyDTO
+		expected       model.APIKeyDTO
 	}{
 		{
 			name: "when_repo_error_should_return_nil",
@@ -277,7 +277,7 @@ func Test_Apikey_serviceImpl_GetItem(t *testing.T) {
 					repo := mock.NewMockRepository[model.APIKey, model.APIKeyDTO](ctrl)
 					repo.EXPECT().
 						FindByID(ctx, gomock.Any()).
-						Return(nil, errors.New("Mock error"))
+						Return(model.APIKeyDTO{}, errors.New("Mock error"))
 
 					return repo
 				},
@@ -293,12 +293,12 @@ func Test_Apikey_serviceImpl_GetItem(t *testing.T) {
 					repo := mock.NewMockRepository[model.APIKey, model.APIKeyDTO](ctrl)
 					repo.EXPECT().
 						FindByID(ctx, gomock.Any()).
-						Return(&model.APIKeyDTO{Token: mockToken, Name: "apikey"}, nil)
+						Return(model.APIKeyDTO{Token: mockToken, Name: "apikey"}, nil)
 
 					return repo
 				},
 			},
-			expected: &model.APIKeyDTO{Token: mockToken, Name: "apikey"},
+			expected: model.APIKeyDTO{Token: mockToken, Name: "apikey"},
 		},
 	}
 

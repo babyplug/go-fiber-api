@@ -12,13 +12,13 @@ tidy:
 
 t: test
 test:
-	go clean -testcache && go test ./internal/feature/... ./internal/core/...
+	go test ./internal/feature/... ./internal/core/...
 
 tc: test.cov
 test.cov:
 	$(ENV_LOCAL_TEST) \
 	go test -covermode=count -coverprofile=covprofile.out ./internal/feature/... ./internal/core/...
-	# make test.cov.xml
+	make test.cov.xml
 
 tc.xml: test.cov.xml
 test.cov.xml:

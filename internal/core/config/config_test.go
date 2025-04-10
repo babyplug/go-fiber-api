@@ -24,6 +24,7 @@ func TestLoadConfig(t *testing.T) {
 				DevMode:       false,
 				Port:          "80",
 				IsAutoMigrate: true,
+				TZ:            "Asia/Bangkok",
 			},
 		},
 	}

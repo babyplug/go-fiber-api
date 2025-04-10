@@ -16,7 +16,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestHandler_Create(t *testing.T) {
+func TestApiKey_Handler_Create(t *testing.T) {
 	type dependency struct {
 		s func(ctrl *gomock.Controller) apikey.Service
 	}
@@ -103,14 +103,14 @@ func TestHandler_Create(t *testing.T) {
 	}
 }
 
-func TestHandler_GetAll(t *testing.T) {
+func TestApiKey_Handler_GetAll(t *testing.T) {
 	type dependency struct {
 		s func(ctrl *gomock.Controller) apikey.Service
 	}
 
 	mockData := []model.APIKeyDTO{
-		{Token: "token1", Name: "apikey1", Duration: model.DurationSevenDays},
-		{Token: "token2", Name: "apikey2", Duration: model.DurationUnlimited},
+		{Base: model.Base{ID: 1}, Token: "token1", Name: "apikey1", Duration: model.DurationSevenDays},
+		{Base: model.Base{ID: 2}, Token: "token2", Name: "apikey2", Duration: model.DurationUnlimited},
 	}
 
 	tests := []struct {
@@ -143,7 +143,7 @@ func TestHandler_GetAll(t *testing.T) {
 				},
 			},
 			expectedStatus: fiber.StatusOK,
-			expectedBody:   `{"message":"success","data":[{"token":"token1","name":"apikey1","duration":"7_DAYS","createdAt":0},{"token":"token2","name":"apikey2","duration":"UNLIMITED","createdAt":0}]}`,
+			expectedBody:   `{"message":"success","data":[{"id":1,"token":"token1","name":"apikey1","duration":"7_DAYS","createdAt":"0001-01-01T00:00:00Z","updatedAt":"0001-01-01T00:00:00Z"},{"id":2,"token":"token2","name":"apikey2","duration":"UNLIMITED","createdAt":"0001-01-01T00:00:00Z","updatedAt":"0001-01-01T00:00:00Z"}]}`,
 		},
 	}
 
@@ -177,13 +177,13 @@ func TestHandler_GetAll(t *testing.T) {
 	}
 }
 
-func TestHandler_GetItem(t *testing.T) {
+func TestApiKey_Handler_GetItem(t *testing.T) {
 	type dependency struct {
 		s func(ctrl *gomock.Controller) apikey.Service
 	}
 
 	mockToken := "mockToken"
-	mockData := &model.APIKeyDTO{Token: mockToken, Name: "apikey"}
+	mockData := &model.APIKeyDTO{Base: model.Base{ID: 1}, Token: mockToken, Name: "apikey"}
 
 	tests := []struct {
 		name           string
@@ -199,7 +199,7 @@ func TestHandler_GetItem(t *testing.T) {
 			dependency: dependency{
 				s: func(ctrl *gomock.Controller) apikey.Service {
 					m := mock.NewMockAPIKeyService(ctrl)
-					m.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(nil, errors.New("mock error"))
+					m.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(model.APIKeyDTO{}, errors.New("mock error"))
 					return m
 				},
 			},
@@ -213,12 +213,12 @@ func TestHandler_GetItem(t *testing.T) {
 			dependency: dependency{
 				s: func(ctrl *gomock.Controller) apikey.Service {
 					m := mock.NewMockAPIKeyService(ctrl)
-					m.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(mockData, nil)
+					m.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(*mockData, nil)
 					return m
 				},
 			},
 			expectedStatus: fiber.StatusOK,
-			expectedBody:   `{"message":"success","data":{"token":"mockToken","name":"apikey","createdAt":0,"duration":""}}`,
+			expectedBody:   `{"message":"success","data":{"id":1,"token":"mockToken","name":"apikey","createdAt":0,"duration":"","createdAt":"0001-01-01T00:00:00Z","updatedAt":"0001-01-01T00:00:00Z"}}`,
 		},
 	}
 
@@ -252,7 +252,7 @@ func TestHandler_GetItem(t *testing.T) {
 	}
 }
 
-func TestHandler_DeleteItem(t *testing.T) {
+func TestApiKey_Handler_DeleteItem(t *testing.T) {
 	type dependency struct {
 		s func(ctrl *gomock.Controller) apikey.Service
 	}
